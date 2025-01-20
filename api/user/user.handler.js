@@ -7,32 +7,18 @@ export const userHandler = {
 	query,
 	getById,
 	getByUsername,
+	getByUsernameWithPosts,
 	remove,
 	update,
 	add,
 }
 
 async function query(filterBy = {}) {
-	const criteria = _buildCriteria(filterBy)
+	// const criteria = _buildCriteria(filterBy)
 	try {
 		const collection = await dbService.getCollection('users')
-		return await collection.aggregate([
-			{
-				$match: criteria
-			},
-			{
-				$sort: { fullname: 1 }
-			},
-			{
-				$project: {
-					username: 1,
-					createdAt: { $toLong: { $toDate: '$_id' } },
-					fullname: 1,
-					imgURL: 1,
-					isAdmin: 1,
-				}
-			}
-		]).toArray()
+		return await collection.find().toArray()
+
 	} catch (err) {
 		logger.error('cannot find users', err)
 		throw err
@@ -62,6 +48,112 @@ async function getByUsername(username) {
 	}
 }
 
+async function getByUsernameWithPosts(username) {
+	try {
+		const collection = await dbService.getCollection('users')
+		const userWithPosts = await collection.aggregate([
+			{
+				$match: {
+					username // Replace with the actual username
+				}
+			},
+			{
+				$addFields: {
+					postIDs: {
+						$ifNull: [
+							{
+								$map: {
+									input: '$postIDs',
+									as: 'id',
+									in: { $toObjectId: '$$id' }
+								}
+							},
+							[]
+						]
+					}
+				}
+			},
+			{
+				$unwind: {
+					path: '$postIDs',
+					preserveNullAndEmptyArrays: true
+				}
+			},
+			{
+				$lookup: {
+					from: 'posts',
+					localField: 'postIDs',
+					foreignField: '_id',
+					as: 'userPosts'
+				}
+			},
+			{
+				$unwind: {
+					path: '$userPosts',
+					preserveNullAndEmptyArrays: true
+				}
+			},
+			{
+				$group: {
+					_id: '$_id',
+					username: { $first: '$username' },
+					fullname: { $first: '$fullname' },
+					following: { $first: '$following' },
+					followers: { $first: '$followers' },
+					savedPostIds: { $first: '$savedPostIds' },
+					imgUrl: { $first: '$imgUrl' },
+					imgUrls: {
+						$push: {
+							$cond: {
+								if: {
+									$gt: [
+										{
+											$size: {
+												$objectToArray: {
+													// If userPosts is null, use an empty object: {}
+													$ifNull: ['$userPosts', {}]
+												}
+											}
+										},
+										0
+									]
+								},
+								then: { _id: '$userPosts._id', url: '$userPosts.imgUrl' },
+								else: null
+							}
+
+						}
+					}
+				}
+			},
+			{
+				$project: {
+					_id: 1,
+					username: 1,
+					fullname: 1,
+					following: 1,
+					followers: 1,
+					savedPostIds: 1,
+					imgUrl: 1,
+					imgUrls: {
+						$filter: {
+							input: '$imgUrls',
+							as: 'img',
+							cond: { $ne: ['$$img', null] }
+						}
+					}
+				}
+			}
+		]).toArray()
+
+		return userWithPosts
+	} catch (err) {
+		logger.error(`while finding user ${username}`, err)
+		throw err
+	}
+
+}
+
 async function remove(userID) {
 	try {
 		const collection = await dbService.getCollection('users')
@@ -78,9 +170,11 @@ async function update(user) {
 			_id: ObjectId.createFromHexString(user._id),
 			username: user.username,
 			fullname: user.fullname,
-			imgURL: user.imgURL,
-			score: user.score,
-			isAdmin: user.isAdmin
+			imgUrl: user.imgUrl,
+			following: user.following,
+			followers: user.followers,
+			postIDs: user.postIDs,
+			savedPostIDs: user.savedPostIDs
 		}
 		const collection = await dbService.getCollection('users')
 		await collection.updateOne({ _id: userToSave._id }, { $set: userToSave })
@@ -94,6 +188,7 @@ async function update(user) {
 async function add(user) {
 	try {
 		const userToAdd = {
+			..._getEmptyCredentials(),
 			username: user.username,
 			password: user.password,
 			fullname: user.fullname,
@@ -125,4 +220,17 @@ function _buildCriteria(filterBy) {
 		criteria.balance = { $gte: filterBy.minBalance }
 	}
 	return criteria
+}
+
+function _getEmptyCredentials() {
+	return {
+		username: '',
+		password: '',
+		fullname: '',
+		imgUrl: 'https://res.cloudinary.com/dtkjyqiap/image/upload/v1736627051/44884218_345707102882519_2446069589734326272_n_lutjai.jpg',
+		following: [],
+		followers: [],
+		postIDs: [],
+		savedPostIds: []
+	}
 }

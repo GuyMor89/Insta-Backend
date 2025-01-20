@@ -34,7 +34,7 @@ async function signup(username, password, fullname) {
     logger.debug(`auth.service - signup with username: ${username}, fullname: ${fullname}`)
     if (!username || !password || !fullname) throw new Error('Missing details')
 
-    const usernameTaken = await userService.getByUsername(username)
+    const usernameTaken = await userHandler.getByUsername(username)
     if (usernameTaken) return Promise.reject('Username already taken')
 
     const hash = await bcrypt.hash(password, saltRounds)
@@ -42,15 +42,15 @@ async function signup(username, password, fullname) {
 }
 
 function createToken(user) {
-    const userInfo = { _id: user._id, fullname: user.fullname, isAdmin: user.isAdmin }
+    const userInfo = { _id: user._id, username: user.username, imgUrl: user.imgUrl }
     return cryptr.encrypt(JSON.stringify(userInfo))
 }
 
 function validateToken(loginToken) {
     try {
         const json = cryptr.decrypt(loginToken)
-        const loggedinUser = JSON.parse(json)
-        return loggedinUser
+        const loggedInUser = JSON.parse(json)
+        return loggedInUser
     } catch (err) {
         console.log('Invalid login token')
     }
