@@ -1,9 +1,11 @@
 import { userHandler } from "./user.handler.js"
 import { logger } from "../../services/logger.service.js"
+import { authHandler } from "../auth/auth.handler.js"
 
 export async function getUsers(req, res) {
     try {
-        const users = await userHandler.query()
+        const { text } = req.query
+        const users = await userHandler.query(text)
         res.send(users)
     } catch (err) {
         logger.error('Failed to get users', err)
@@ -44,9 +46,27 @@ export async function updateUser(req, res) {
     try {
         const user = req.body
         const savedUser = await userHandler.update(user)
+
+        const loginToken = authHandler.createToken(savedUser)
+        res.cookie('loginToken', loginToken)
+
         res.send(savedUser)
     } catch (err) {
         logger.error('Failed to update user', err)
         res.status(400).send({ err: 'Failed to update user' })
+    }
+}
+
+export async function updateUsers(req, res) {
+    try {
+        const loggedInUser = req.loggedInUser
+        const userToFollowID = req.params.id
+        const { type } = req.body
+
+        const savedUsers = await userHandler.updateFollow(type, loggedInUser, userToFollowID)
+        res.send(savedUsers)
+    } catch (err) {
+        logger.error('Failed to update user', err)
+        res.status(400).send({ err: 'Failed to update users' })
     }
 }

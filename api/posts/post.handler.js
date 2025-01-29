@@ -11,18 +11,29 @@ export const postHandler = {
     updatePost
 }
 
-async function query(filterBy) {
+async function query(limit) {
     try {
+        if (limit === null) limit = 0
         const collection = await dbService.getCollection('posts')
-        const posts = await collection.aggregate([
+        const pipeline = [
             {
                 $addFields: {
                     createdAt: {
                         $toLong: { $toDate: "$_id" }
                     }
                 }
+            },
+            {
+                $sort: { createdAt: -1 }
             }
-        ]).toArray()
+        ]
+
+        if (limit) {
+            pipeline.push({ $limit: Number(limit) })
+        }
+
+        const posts = await collection.aggregate(pipeline).toArray()
+
 
         return posts
     } catch (err) {
@@ -49,9 +60,11 @@ async function addPost({ postData, userData }) {
         const postToAdd = { ..._getEmptyCredentials(), by: { ...userData }, ...postData }
 
         const collection = await dbService.getCollection('posts')
-        await collection.insertOne(postToAdd)
+        const addedPost = await collection.insertOne(postToAdd)
 
-        return postToAdd
+        const addedPostWithCreatedAt = await getByID(addedPost.insertedId.toString())
+
+        return addedPostWithCreatedAt
     } catch (err) {
         logger.error('ERROR: cannot add post')
         throw err

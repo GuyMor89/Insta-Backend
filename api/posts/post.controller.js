@@ -1,10 +1,12 @@
 import exp from "constants"
 import { logger } from "../../services/logger.service.js"
 import { postHandler } from "./post.handler.js"
+import { userHandler } from "../user/user.handler.js"
 
 export async function getPosts(req, res) {
     try {
-        const posts = await postHandler.query(req.query)
+        const { limit } = req.query
+        const posts = await postHandler.query(limit)
         res.json(posts)
     } catch (err) {
         logger.error('Failed to get posts', err)
@@ -28,7 +30,10 @@ export async function addPost(req, res) {
         const postData = req.body
         const userData = req.loggedInUser
         const addedPost = await postHandler.addPost({ postData, userData })
-        console.log(addedPost)
+
+        const fullUser = await userHandler.getById(req.loggedInUser._id)
+        await userHandler.update({ ...fullUser, postIDs: [...fullUser.postIDs, addedPost._id] })
+
         res.json(addedPost)
     } catch (err) {
         logger.error('Failed to add post', err)

@@ -4,13 +4,9 @@ import { logger } from '../services/logger.service.js'
 const isGuestMode = true
 
 export function requireAuth(req, res, next) {
-	const { loggedInUser } = asyncLocalStorage.getStore()
+	const loggedInUser = asyncLocalStorage?.getStore()?.loggedInUser
 	req.loggedInUser = loggedInUser
 
-	if (isGuestMode && !loggedInUser) {
-		req.loggedInUser = { _id: '', fullname: 'Guest' }
-		return next()
-	}
 	if (!loggedInUser) return res.status(401).send('Not Authenticated')
 	next()
 }
