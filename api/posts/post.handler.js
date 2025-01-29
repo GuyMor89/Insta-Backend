@@ -60,9 +60,9 @@ async function addPost({ postData, userData }) {
         const postToAdd = { ..._getEmptyCredentials(), by: { ...userData }, ...postData }
 
         const collection = await dbService.getCollection('posts')
-        const addedPost = await collection.insertOne(postToAdd)
+        const addedPostID = await collection.insertOne(postToAdd)
 
-        const addedPostWithCreatedAt = await getByID(addedPost.insertedId.toString())
+        const addedPostWithCreatedAt = await getByID(addedPostID.insertedId.toString())
 
         return addedPostWithCreatedAt
     } catch (err) {

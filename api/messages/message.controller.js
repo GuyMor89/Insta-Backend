@@ -12,6 +12,18 @@ export async function getMessages(req, res) {
     }
 }
 
+export async function addMessage(req, res) {
+    try {
+        const loggedInUser = req.loggedInUser
+        const { secondUserID } = req.body
+        const addedMessageID = await messageHandler.addMessage(loggedInUser._id, secondUserID)
+        res.json(addedMessageID)
+    } catch (err) {
+        logger.error('Failed to get messages', err)
+        res.status(500).send({ err: 'Failed to get messages' })
+    }
+}
+
 export async function updateMessage(req, res) {
     try {
         const messageID = req.params.id
