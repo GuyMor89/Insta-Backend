@@ -1,5 +1,6 @@
 import { messageHandler } from './message.handler.js'
 import { logger } from '../../services/logger.service.js'
+import { emitMessageSent } from '../../services/socket.service.js'
 
 export async function getMessages(req, res) {
     try {
@@ -24,14 +25,30 @@ export async function addMessage(req, res) {
     }
 }
 
-export async function updateMessage(req, res) {
+export async function sendLine(req, res) {
     try {
         const messageID = req.params.id
+        const { secondUserID } = req.body
         const { lineToSend } = req.body
-        const updatedMessage = await messageHandler.updateMessage(messageID, lineToSend)
+
+        const updatedMessage = await messageHandler.sendLine(messageID, lineToSend)
+        emitMessageSent({ messageID, lineToSend }, secondUserID)
+
         res.json(updatedMessage)
     } catch (err) {
         logger.error('Failed to get messages', err)
         res.status(500).send({ err: 'Failed to get messages' })
+    }
+}
+
+export async function markRead(req, res) {
+    try {
+        const messageID = req.params.id
+        const markedAsRead = await messageHandler.markRead(messageID)
+
+        res.json(markedAsRead)
+    } catch (err) {
+        logger.error('Failed to mark all as read', err)
+        res.status(500).send({ err: 'Failed to mark all as read' })
     }
 }

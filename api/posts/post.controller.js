@@ -6,7 +6,9 @@ import { userHandler } from "../user/user.handler.js"
 export async function getPosts(req, res) {
     try {
         const { limit } = req.query
-        const posts = await postHandler.query(limit)
+        const loggedInUser = req.loggedInUser
+
+        const posts = await postHandler.query(limit, loggedInUser)
         res.json(posts)
     } catch (err) {
         logger.error('Failed to get posts', err)

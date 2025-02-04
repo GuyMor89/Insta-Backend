@@ -184,10 +184,8 @@ async function updateFollow(type, loggedInUser, userToFollowID) {
 		const fullLoggedInUser = await getById(loggedInUser._id)
 		const fullUserToFollow = await getById(userToFollowID)
 
-		console.log(fullUserToFollow)
-
-		const followUserToFollow = { following: [...fullLoggedInUser.following, fullUserToFollow._id] }
-		const addLoggedInUserToFollowers = { followers: [...fullUserToFollow.followers, fullLoggedInUser._id] }
+		const followUserToFollow = { following: [...fullLoggedInUser.following, fullUserToFollow._id.toString()] }
+		const addLoggedInUserToFollowers = { followers: [...fullUserToFollow.followers, fullLoggedInUser._id.toString()] }
 
 		const unFollowUserToFollow = { following: fullLoggedInUser.following.filter(_id => _id.toString() !== fullUserToFollow._id.toString()) }
 		const removeLoggedInUserFromFollowers = { followers: fullUserToFollow.followers.filter(_id => _id.toString() !== fullLoggedInUser._id.toString()) }

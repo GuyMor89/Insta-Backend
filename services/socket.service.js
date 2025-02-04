@@ -3,63 +3,90 @@ import { Server } from 'socket.io'
 
 var gIo = null
 
+const userData = new Map()
+
 export function setupSocketAPI(http) {
     gIo = new Server(http, {
         cors: {
             origin: '*',
         }
     })
-    gIo.on('connection', socket => {
+
+    gIo.on("connection", (socket) => {
         logger.info(`New connected socket [id: ${socket.id}]`)
-        socket.on('disconnect', socket => {
+
+        socket.on("disconnect", () => {
             logger.info(`Socket disconnected [id: ${socket.id}]`)
-        })
-        socket.on('set-room', room => {
-            if (socket.room === room) return
-            if (socket.room) {
-                socket.leave(socket.room)
-                logger.info(`Socket is leaving room ${socket.room} [id: ${socket.id}]`)
+
+            const user = userData.get(socket.id)
+            if (user) {
+                logger.info(`Removing socket mapping for user ${user.userID}`)
+                userData.delete(socket.id)
             }
-            socket.join(room)
-            socket.room = room
         })
-        socket.on('msg-from-socket', msg => {
-            logger.info(`New chat msg from socket [id: ${socket.id}], emitting to room ${socket.room}`)
-            // emits to all sockets:
-            // gIo.emit('chat addMsg', msg)
-            // emits only to sockets in the same room
-            gIo.to(socket.room).emit('msg-from-server', msg)
+
+        socket.on("set-user-socket", (userID) => {
+            logger.info(`Setting userID = ${userID} for socket [id: ${socket.id}]`)
+
+            for (const [existingSocketID, data] of userData.entries()) {
+                if (data.userID === userID) {
+                    logger.info(`Removing old socket [id: ${existingSocketID}] for user ${userID}`)
+                    userData.delete(existingSocketID)
+                    data.socket.disconnect()
+                    break
+                }
+            }
+            userData.set(socket.id, { userID, socket })
         })
+
+        // socket.on("set-room", (room) => {
+        //     const user = userData.get(socket.id)
+        //     if (!user) return
+
+        //     if (user.rooms.has(room)) return
+
+        //     socket.join(room)
+        //     user.rooms.add(room)
+        //     logger.info(`User ${user.userID} joined room ${room} [socket.id: ${socket.id}]`)
+        // })
+
+        // socket.on("leave-room", (room) => {
+        //     const user = userData.get(socket.id)
+        //     if (!user) return
+
+        //     if (user.rooms.has(room)) {
+        //         socket.leave(room)
+        //         user.rooms.delete(room)
+        //         logger.info(`User ${user.userID} left room ${room} [socket.id: ${socket.id}]`)
+        //     }
+        // })
+
+        socket.on("notification-from-socket", (userID) => {
+
+            emitToUser({ type: "notification-from-server", data: 'update', userID })
+
+        })
+
+
         socket.on('user-is-typing', ({ user, userID }) => {
             // gIo.to(socket.room).emit('user-is-typing', user)
-            broadcast({ type: 'user-is-typing', data: user, room: socket.room, userID: userID })
+            broadcast({ type: 'user-is-typing', data: user, room: socket.room, userID })
         })
+
         socket.on('watch-current-user', userID => {
             logger.info(`user-watch from socket [id: ${socket.id}], on user ${userID}`)
             socket.join(userID)
-        })
-        socket.on('set-user-socket', userID => {
-            logger.info(`Setting socket.userID = ${userID} for socket [id: ${socket.id}]`)
-            socket.userID = userID
-        })
-        socket.on('unset-user-socket', () => {
-            logger.info(`Removing socket.userID for socket [id: ${socket.id}]`)
-            delete socket.userID
         })
 
     })
 }
 
-export function broadcastUserRemovedReview(data, userID) {
-    broadcast({ type: 'user-removed-review', data: data, userID: userID })
+export function emitMessageSent({ messageID, lineToSend }, toUserID) {
+    emitToUser({ type: "msg-from-server", data: { messageID, lineToSend }, toUserID })
 }
 
-export function broadcastUserAddedReview(data, userID) {
-    broadcast({ type: 'user-added-review', data: data, userID: userID })
-}
-
-export function emitUpdatedUser(data, label) {
-    broadcast({ type: 'user-updated', data, room })
+export function emitNotification(activity, toUserID) {
+    emitToUser({ type: "notification-from-server", data: activity, toUserID })
 }
 
 
@@ -68,15 +95,15 @@ export function emitUpdatedUser(data, label) {
 //     else gIo.emit(type, data)
 // }
 
-async function emitToUser({ type, data, userID }) {
-    userID = userID.toString()
-    const socket = await _getUserSocket(userID)
+async function emitToUser({ type, data, toUserID }) {
+    toUserID = toUserID.toString()
+    const socket = await _getUserSocket(toUserID)
 
     if (socket) {
-        logger.info(`Emiting event: ${type} to user: ${userID} socket [id: ${socket.id}]`)
+        logger.info(`Emiting event: ${type} to user: ${toUserID} socket [id: ${socket.id}]`)
         socket.emit(type, data)
     } else {
-        logger.info(`No active socket for user: ${userID}`)
+        logger.info(`No active socket for user: ${toUserID}`)
         // _printSockets()
     }
 }
@@ -85,37 +112,53 @@ async function emitToUser({ type, data, userID }) {
 // Optionally, broadcast to a room / to all
 async function broadcast({ type, data, room = null, userID }) {
     console.log(type, data, room, userID)
-    userID = userID.toString()
+    userID = userID?.toString()
 
     logger.info(`Broadcasting event: ${type}`)
     const excludedSocket = await _getUserSocket(userID)
-    console.log(!excludedSocket)
-    console.log(excludedSocket?.id)
-    if (room && excludedSocket) {
-        logger.info(`Broadcast to room ${room} excluding user: ${userID}`)
-        excludedSocket.broadcast.to(room).emit(type, data)
-    } else if (excludedSocket) {
-        logger.info(`Broadcast to all excluding user: ${userID}`)
-        excludedSocket.broadcast.emit(type, data)
-    } else if (room) {
-        logger.info(`Emit to room: ${room}`)
-        gIo.to(room).emit(type, data)
+
+    console.log('excluded socket', excludedSocket?.id)
+
+    if (room) {
+        if (excludedSocket) {
+            logger.info(`Broadcast to room ${room} excluding user: ${userID}`)
+            excludedSocket.broadcast.to(room).emit(type, data)
+        } else {
+            logger.info(`Emit to room: ${room}`)
+            gIo.to(room).emit(type, data)
+        }
     } else {
-        logger.info(`Emit to all`)
-        gIo.emit(type, data)
+        if (excludedSocket) {
+            logger.info(`Broadcast to all excluding user: ${userID}`)
+            excludedSocket.broadcast.emit(type, data)
+        } else {
+            logger.info(`Emit to all`)
+            gIo.emit(type, data)
+        }
     }
 }
 
-async function _getUserSocket(userID) {
-    const sockets = await _getAllSockets()
-    const socket = sockets.find(s => s.userID === userID)
-    return socket
+function _getUserSocket(userID) {
+    for (const user of userData.values()) {
+        if (user.userID === userID) {
+            return user.socket
+        }
+    }
+    return null
 }
-async function _getAllSockets() {
-    // return all Socket instances
-    const sockets = await gIo.fetchSockets()
-    return sockets
-}
+
+
+// async function _getUserSocket(userID) {
+//     const sockets = await _getAllSockets()
+//     const socket = sockets.find(s => s.userID === userID)
+//     return socket
+// }
+
+// async function _getAllSockets() {
+//     // return all Socket instances
+//     const sockets = await gIo.fetchSockets()
+//     return sockets
+// }
 
 async function _printSockets() {
     const sockets = await _getAllSockets()

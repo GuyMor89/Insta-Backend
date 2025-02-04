@@ -1,5 +1,6 @@
 import { authHandler } from "./auth.handler.js"
 import { logger } from '../../services/logger.service.js'
+import { notificationHandler } from "../notifications/notifications.handler.js"
 
 export async function login(req, res) {
     const { username, password } = req.body
@@ -32,6 +33,8 @@ export async function signup(req, res) {
         const user = await authHandler.login(username, password)
         const loginToken = authHandler.createToken(user)
         logger.info('User signup:', user)
+
+        await notificationHandler.createNotification(user._id)
         
         res.cookie('loginToken', loginToken)
         res.json(user)

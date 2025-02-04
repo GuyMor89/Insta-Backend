@@ -8,14 +8,14 @@ import { ObjectId } from "mongodb"
 export const messageHandler = {
 	query,
 	addMessage,
-	updateMessage
+	sendLine,
+	markRead
 }
 
 async function query(loggedInUserID) {
 	try {
 		const collection = await dbService.getCollection('messages')
-
-		const messages = collection.aggregate([
+		const messages = await collection.aggregate([
 			{
 				$match: {
 					"by._id": ObjectId.createFromHexString(loggedInUserID)
@@ -25,7 +25,17 @@ async function query(loggedInUserID) {
 				$project: {
 					_id: 1,
 					lines: 1,
-					sentAt: 1,
+					hasUnread: {
+						$gt: [{
+							$size: {
+								$filter: {
+									input: "$lines",
+									as: "line",
+									cond: { $eq: ["$$line.isRead", false] }
+								}
+							}
+						}, 0]
+					},
 					user: {
 						$first: {
 							$filter: {
@@ -45,6 +55,19 @@ async function query(loggedInUserID) {
 		logger.error('cannot find messages', err)
 		throw err
 	}
+}
+
+
+async function getByID(messageID) {
+    try {
+        const collection = await dbService.getCollection('messages')
+        const message = await collection.findOne({ _id: ObjectId.createFromHexString(messageID) })
+
+        return message
+    } catch (err) {
+        logger.error('ERROR: cannot find message')
+        throw err
+    }
 }
 
 async function addMessage(loggedInUserID, secondUserID) {
@@ -79,7 +102,7 @@ async function addMessage(loggedInUserID, secondUserID) {
 	}
 }
 
-async function updateMessage(messageID, lineToSend) {
+async function sendLine(messageID, lineToSend) {
 	try {
 		const collection = await dbService.getCollection('messages')
 		await collection.updateOne({ _id: utilService.getUserId(messageID) }, { $push: { lines: lineToSend } })
@@ -87,6 +110,18 @@ async function updateMessage(messageID, lineToSend) {
 		return lineToSend
 	} catch (err) {
 		logger.error('cannot send message', err)
+		throw err
+	}
+}
+
+async function markRead(messageID) {
+	try {
+		const collection = await dbService.getCollection('messages')
+		const message = await collection.updateOne({ _id: utilService.getUserId(messageID)}, { $set: { "lines.$[].isRead": true } })
+
+		return message
+	} catch (err) {
+		logger.error('cannot mark as read', err)
 		throw err
 	}
 }

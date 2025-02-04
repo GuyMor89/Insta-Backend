@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb"
 import { dbService } from "../../services/db.service.js"
 import { logger } from "../../services/logger.service.js"
 import { utilService } from '../../services/util.service.js'
+import { userHandler } from "../user/user.handler.js"
 
 export const postHandler = {
     query,
@@ -11,36 +12,67 @@ export const postHandler = {
     updatePost
 }
 
-async function query(limit) {
+async function query(limit, loggedInUser) {
     try {
-        if (limit === null) limit = 0
-        const collection = await dbService.getCollection('posts')
-        const pipeline = [
-            {
-                $addFields: {
-                    createdAt: {
-                        $toLong: { $toDate: "$_id" }
-                    }
-                }
-            },
-            {
-                $sort: { createdAt: -1 }
-            }
-        ]
+        const fullLoggedInUser = await userHandler.getById(loggedInUser._id);
+        // Determine if a limit was provided
+        const hasLimit = limit !== null && limit !== undefined;
 
-        if (limit) {
-            pipeline.push({ $limit: Number(limit) })
+        const collection = await dbService.getCollection('posts');
+        const pipeline = [];
+
+        // If a limit is provided, filter posts based on the user's following list.
+        if (hasLimit) {
+            pipeline.push({
+                $match: {
+                    "by._id": { $in: fullLoggedInUser.following }
+                }
+            });
         }
 
-        const posts = await collection.aggregate(pipeline).toArray()
+        // Always add a createdAt field (if you still need this for display or other processing)
+        pipeline.push({
+            $addFields: {
+                createdAt: {
+                    $toLong: { $toDate: "$_id" }
+                }
+            }
+        });
 
+        // If a limit is provided, sort by creation time. Otherwise, randomize the order.
+        if (hasLimit) {
+            pipeline.push({
+                $sort: { createdAt: -1 }
+            });
+        } else {
+            // Add a random field
+            pipeline.push({
+                $addFields: { random: { $rand: {} } }
+            });
+            // Sort documents by the random field
+            pipeline.push({
+                $sort: { random: 1 }
+            });
+            // Optionally remove the random field from the output
+            pipeline.push({
+                $project: { random: 0 }
+            });
+        }
 
-        return posts
+        // Apply the limit stage if one is provided
+        if (hasLimit) {
+            pipeline.push({ $limit: Number(limit) });
+        }
+
+        const posts = await collection.aggregate(pipeline).toArray();
+        return posts;
     } catch (err) {
-        logger.error('ERROR: cannot find posts')
-        throw err
+        console.error("Error in query function:", err);
+        throw err;
     }
 }
+
+
 
 async function getByID(postID) {
     try {

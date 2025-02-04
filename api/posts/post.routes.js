@@ -6,7 +6,7 @@ import { addPost, getPost, getPosts, updatePost } from './post.controller.js'
 
 export const postRoutes = express.Router()
 
-postRoutes.get('/', log, getPosts)
+postRoutes.get('/', log, requireAuth, getPosts)
 postRoutes.get('/:id', getPost)
 postRoutes.post('/', requireAuth, addPost)
 postRoutes.put('/', requireAuth, log, updatePost)
