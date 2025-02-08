@@ -33800,3 +33800,26 @@
 9.2.2025, 1:45:05 - INFO - Req was made | /username/:username | 67a1524f78fa981b52d63aa0
 9.2.2025, 1:45:05 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
 9.2.2025, 1:45:05 - INFO - Req was made | /username/:username | 67a1524f78fa981b52d63aa0
+9.2.2025, 1:46:41 - INFO - Req was made | /username/:username | 67a1524f78fa981b52d63aa0
+9.2.2025, 1:46:43 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+9.2.2025, 1:46:43 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+9.2.2025, 1:46:44 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+9.2.2025, 1:46:44 - INFO - Req was made | /username/:username | 67a1524f78fa981b52d63aa0
+9.2.2025, 1:48:53 - INFO - 🔴 Socket disconnected [id: IsLqbcGnfdoMtfmPAAAn], Reason: transport close
+9.2.2025, 1:48:53 - INFO - 🗑 Removing socket mapping for user 67a1524f78fa981b52d63aa0
+9.2.2025, 1:48:54 - INFO - 🔵 New connected socket [id: AW_ViHl0Nm1_4f9KAAAp]
+9.2.2025, 1:48:54 - INFO - 🟢 Setting userID = 67a1524f78fa981b52d63aa0 for socket [id: AW_ViHl0Nm1_4f9KAAAp]
+9.2.2025, 1:48:54 - INFO - ✅ Successfully set userID = 67a1524f78fa981b52d63aa0 for socket [id: AW_ViHl0Nm1_4f9KAAAp]
+9.2.2025, 1:48:54 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+9.2.2025, 1:48:54 - INFO - Req was made | /username/:username | 67a1524f78fa981b52d63aa0
+9.2.2025, 1:48:54 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+9.2.2025, 1:48:54 - INFO - Req was made | /username/:username | 67a1524f78fa981b52d63aa0
+9.2.2025, 1:50:04 - INFO - 🔴 Socket disconnected [id: AW_ViHl0Nm1_4f9KAAAp], Reason: transport close
+9.2.2025, 1:50:04 - INFO - 🗑 Removing socket mapping for user 67a1524f78fa981b52d63aa0
+9.2.2025, 1:50:04 - INFO - 🔵 New connected socket [id: MysxNF5LQpcydUOuAAAr]
+9.2.2025, 1:50:04 - INFO - 🟢 Setting userID = 67a1524f78fa981b52d63aa0 for socket [id: MysxNF5LQpcydUOuAAAr]
+9.2.2025, 1:50:04 - INFO - ✅ Successfully set userID = 67a1524f78fa981b52d63aa0 for socket [id: MysxNF5LQpcydUOuAAAr]
+9.2.2025, 1:50:04 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+9.2.2025, 1:50:04 - INFO - Req was made | /username/:username | 67a1524f78fa981b52d63aa0
+9.2.2025, 1:50:04 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+9.2.2025, 1:50:05 - INFO - Req was made | /username/:username | 67a1524f78fa981b52d63aa0
