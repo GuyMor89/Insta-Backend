@@ -32,6 +32,7 @@ export async function addPost(req, res) {
         const postData = req.body
         const userData = req.loggedInUser
         const addedPost = await postHandler.addPost({ postData, userData })
+        console.log(addedPost._id)
 
         const fullUser = await userHandler.getById(req.loggedInUser._id)
         await userHandler.update({ ...fullUser, postIDs: [...fullUser.postIDs, addedPost._id] })

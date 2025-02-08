@@ -13,31 +13,50 @@ export function setupSocketAPI(http) {
     })
 
     gIo.on("connection", (socket) => {
-        logger.info(`New connected socket [id: ${socket.id}]`)
+        logger.info(`🔵 New connected socket [id: ${socket.id}]`)
 
-        socket.on("disconnect", () => {
-            logger.info(`Socket disconnected [id: ${socket.id}]`)
+        // Handle disconnection
+        socket.on("disconnect", (reason) => {
+            logger.info(`🔴 Socket disconnected [id: ${socket.id}], Reason: ${reason}`)
 
             const user = userData.get(socket.id)
+            if (user?.userID) {
+                logger.info(`🗑 Removing socket mapping for user ${user.userID}`)
+            }
+            userData.delete(socket.id) // Remove socket from tracking
+        })
+
+        // Handle explicit removal without disconnecting
+        socket.on("remove-user-socket", () => {
+            const user = userData.get(socket.id)
             if (user) {
-                logger.info(`Removing socket mapping for user ${user.userID}`)
-                userData.delete(socket.id)
+                logger.info(`🗑 User ${user.userID} logged out but keeping connection open`)
+                userData.delete(socket.id) // Remove user mapping but keep the socket open
             }
         })
 
+        // Handle setting a user to a socket
         socket.on("set-user-socket", (userID) => {
-            logger.info(`Setting userID = ${userID} for socket [id: ${socket.id}]`)
+            logger.info(`🟢 Setting userID = ${userID} for socket [id: ${socket.id}]`)
 
             for (const [existingSocketID, data] of userData.entries()) {
                 if (data.userID === userID) {
-                    logger.info(`Removing old socket [id: ${existingSocketID}] for user ${userID}`)
-                    userData.delete(existingSocketID)
-                    data.socket.disconnect()
-                    break
+                    logger.info(`⚠️ Removing old socket [id: ${existingSocketID}] for user ${userID}`)
+
+                    if (existingSocketID === socket.id) {
+                        logger.warn(`❗❗ Attempted to remove the same socket being set! Skipping.`)
+                        continue // Don't remove the new socket that is being set
+                    }
+
+                    userData.delete(existingSocketID) // Remove first
+                    data.socket.disconnect()  // Then disconnect
                 }
             }
-            userData.set(socket.id, { userID, socket })
+
+            userData.set(socket.id, { userID, socket }) // Now set the new socket
+            logger.info(`✅ Successfully set userID = ${userID} for socket [id: ${socket.id}]`)
         })
+
 
         // socket.on("set-room", (room) => {
         //     const user = userData.get(socket.id)

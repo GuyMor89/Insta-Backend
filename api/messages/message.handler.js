@@ -44,8 +44,14 @@ async function query(loggedInUserID) {
 								cond: { $ne: ["$$b._id", ObjectId.createFromHexString(loggedInUserID)] }
 							}
 						}
+					},
+					lastSentAt: {
+						$toLong: { $last: "$lines.sentAt" } // Extract and convert last sentAt to a number
 					}
 				}
+			},
+			{
+				$sort: { lastSentAt: -1 } // Sort by latest message timestamp in descending order
 			}
 		]).toArray()
 
@@ -59,15 +65,15 @@ async function query(loggedInUserID) {
 
 
 async function getByID(messageID) {
-    try {
-        const collection = await dbService.getCollection('messages')
-        const message = await collection.findOne({ _id: ObjectId.createFromHexString(messageID) })
+	try {
+		const collection = await dbService.getCollection('messages')
+		const message = await collection.findOne({ _id: ObjectId.createFromHexString(messageID) })
 
-        return message
-    } catch (err) {
-        logger.error('ERROR: cannot find message')
-        throw err
-    }
+		return message
+	} catch (err) {
+		logger.error('ERROR: cannot find message')
+		throw err
+	}
 }
 
 async function addMessage(loggedInUserID, secondUserID) {
@@ -117,7 +123,7 @@ async function sendLine(messageID, lineToSend) {
 async function markRead(messageID) {
 	try {
 		const collection = await dbService.getCollection('messages')
-		const message = await collection.updateOne({ _id: utilService.getUserId(messageID)}, { $set: { "lines.$[].isRead": true } })
+		const message = await collection.updateOne({ _id: utilService.getUserId(messageID) }, { $set: { "lines.$[].isRead": true } })
 
 		return message
 	} catch (err) {

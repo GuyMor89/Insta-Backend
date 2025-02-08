@@ -158,7 +158,6 @@ async function remove(userID) {
 
 async function update(user) {
 	try {
-		console.log('updating', user)
 		const userToSave = {
 			_id: utilService.getUserId(user._id),
 			username: user.username,
