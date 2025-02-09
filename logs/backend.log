@@ -34507,3 +34507,37 @@
 9.2.2025, 6:11:20 - INFO - Req was made | / | 6786940e83761666aae2d428
 9.2.2025, 6:11:21 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
 9.2.2025, 6:11:21 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+9.2.2025, 6:11:32 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:13:32 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:15:31 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:15:31 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:15:31 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:15:32 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:20:07 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:20:17 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:20:18 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:20:19 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:20:21 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:20:22 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:21:36 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:21:38 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:21:39 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:21:41 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:21:43 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:21:44 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+9.2.2025, 6:21:58 - INFO - 🔴 Socket disconnected [id: sKZOzCo8ZncDBmFEAACb], Reason: transport close
+9.2.2025, 6:21:58 - INFO - 🗑 Removing socket mapping for user 67a1524f78fa981b52d63aa0
+9.2.2025, 6:21:59 - INFO - 🔴 Socket disconnected [id: ETNuCZJ0neS1r5h4AACa], Reason: transport close
+9.2.2025, 6:21:59 - INFO - 🗑 Removing socket mapping for user 6786940e83761666aae2d428
+9.2.2025, 6:21:59 - INFO - 🔵 New connected socket [id: 9QtZbIAwm6p1knrzAACe]
+9.2.2025, 6:21:59 - INFO - 🔵 New connected socket [id: AgCB7x2tGQaydOrxAACf]
+9.2.2025, 6:21:59 - INFO - 🟢 Setting userID = 6786940e83761666aae2d428 for socket [id: 9QtZbIAwm6p1knrzAACe]
+9.2.2025, 6:21:59 - INFO - ✅ Successfully set userID = 6786940e83761666aae2d428 for socket [id: 9QtZbIAwm6p1knrzAACe]
+9.2.2025, 6:21:59 - INFO - 🟢 Setting userID = 67a1524f78fa981b52d63aa0 for socket [id: AgCB7x2tGQaydOrxAACf]
+9.2.2025, 6:21:59 - INFO - ✅ Successfully set userID = 67a1524f78fa981b52d63aa0 for socket [id: AgCB7x2tGQaydOrxAACf]
+9.2.2025, 6:21:59 - INFO - Req was made | / | 6786940e83761666aae2d428
+9.2.2025, 6:21:59 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+9.2.2025, 6:22:00 - INFO - Req was made | / | 6786940e83761666aae2d428
+9.2.2025, 6:22:00 - INFO - Req was made | / | 6786940e83761666aae2d428
+9.2.2025, 6:22:00 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+9.2.2025, 6:22:00 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
