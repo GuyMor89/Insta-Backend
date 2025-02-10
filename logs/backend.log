@@ -35141,3 +35141,79 @@
 10.2.2025, 3:54:24 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
 10.2.2025, 3:54:24 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
 10.2.2025, 3:54:24 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+10.2.2025, 3:56:07 - INFO - 🔴 Socket disconnected [id: hGRWRffxRUmGQrt9AAEV], Reason: transport close
+10.2.2025, 3:56:07 - INFO - 🗑 Removing socket mapping for user 67a1524f78fa981b52d63aa0
+10.2.2025, 3:56:07 - INFO - 🔴 Socket disconnected [id: CJBLW23-0Xm3Fsl_AAET], Reason: transport close
+10.2.2025, 3:56:07 - INFO - 🗑 Removing socket mapping for user 6786940e83761666aae2d428
+10.2.2025, 5:29:52 - INFO - 🔵 New connected socket [id: vEuPyBu6bsKx2ElyAAEY]
+10.2.2025, 5:29:52 - INFO - 🔵 New connected socket [id: 4PnYnPAXrvEa_6vBAAEZ]
+10.2.2025, 5:29:52 - INFO - 🔴 Socket disconnected [id: vEuPyBu6bsKx2ElyAAEY], Reason: transport error
+10.2.2025, 5:29:52 - INFO - 🔵 New connected socket [id: UsfUuz-NuW__Om8rAAEb]
+10.2.2025, 5:29:52 - INFO - 🟢 Setting userID = 67a1524f78fa981b52d63aa0 for socket [id: UsfUuz-NuW__Om8rAAEb]
+10.2.2025, 5:29:52 - INFO - ✅ Successfully set userID = 67a1524f78fa981b52d63aa0 for socket [id: UsfUuz-NuW__Om8rAAEb]
+10.2.2025, 5:29:52 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+10.2.2025, 5:29:52 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+10.2.2025, 5:29:52 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+10.2.2025, 5:32:21 - INFO - 🔴 Socket disconnected [id: 4PnYnPAXrvEa_6vBAAEZ], Reason: transport close
+10.2.2025, 5:32:21 - INFO - 🔵 New connected socket [id: cxpK99H1-RiBf8fDAAEd]
+10.2.2025, 5:32:21 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:32:21 - INFO - 🟢 Setting userID = 6786940e83761666aae2d428 for socket [id: cxpK99H1-RiBf8fDAAEd]
+10.2.2025, 5:32:21 - INFO - ✅ Successfully set userID = 6786940e83761666aae2d428 for socket [id: cxpK99H1-RiBf8fDAAEd]
+10.2.2025, 5:32:21 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:32:21 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:32:22 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:32:22 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+10.2.2025, 5:32:22 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:32:29 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+10.2.2025, 5:32:35 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+10.2.2025, 5:42:44 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:42:49 - INFO - 🔴 Socket disconnected [id: cxpK99H1-RiBf8fDAAEd], Reason: transport close
+10.2.2025, 5:42:49 - INFO - 🗑 Removing socket mapping for user 6786940e83761666aae2d428
+10.2.2025, 5:42:49 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:42:49 - INFO - 🔵 New connected socket [id: 3K98INEU6um6dj3JAAEf]
+10.2.2025, 5:42:49 - INFO - 🟢 Setting userID = 6786940e83761666aae2d428 for socket [id: 3K98INEU6um6dj3JAAEf]
+10.2.2025, 5:42:49 - INFO - ✅ Successfully set userID = 6786940e83761666aae2d428 for socket [id: 3K98INEU6um6dj3JAAEf]
+10.2.2025, 5:42:49 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:45:31 - INFO - 🔴 Socket disconnected [id: 3K98INEU6um6dj3JAAEf], Reason: transport close
+10.2.2025, 5:45:31 - INFO - 🗑 Removing socket mapping for user 6786940e83761666aae2d428
+10.2.2025, 5:45:31 - INFO - 🔵 New connected socket [id: Dv42OkPSKtVAWQgIAAEh]
+10.2.2025, 5:45:31 - INFO - 🟢 Setting userID = 6786940e83761666aae2d428 for socket [id: Dv42OkPSKtVAWQgIAAEh]
+10.2.2025, 5:45:31 - INFO - ✅ Successfully set userID = 6786940e83761666aae2d428 for socket [id: Dv42OkPSKtVAWQgIAAEh]
+10.2.2025, 5:45:31 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:45:31 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:46:29 - INFO - 🔴 Socket disconnected [id: Dv42OkPSKtVAWQgIAAEh], Reason: transport close
+10.2.2025, 5:46:29 - INFO - 🗑 Removing socket mapping for user 6786940e83761666aae2d428
+10.2.2025, 5:46:30 - INFO - 🔵 New connected socket [id: 7rWKLXtQwK8TVTCKAAEj]
+10.2.2025, 5:46:30 - INFO - 🟢 Setting userID = 6786940e83761666aae2d428 for socket [id: 7rWKLXtQwK8TVTCKAAEj]
+10.2.2025, 5:46:30 - INFO - ✅ Successfully set userID = 6786940e83761666aae2d428 for socket [id: 7rWKLXtQwK8TVTCKAAEj]
+10.2.2025, 5:46:30 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:46:30 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:46:31 - INFO - 🔴 Socket disconnected [id: 7rWKLXtQwK8TVTCKAAEj], Reason: transport close
+10.2.2025, 5:46:31 - INFO - 🗑 Removing socket mapping for user 6786940e83761666aae2d428
+10.2.2025, 5:46:31 - INFO - 🔵 New connected socket [id: AaEMl1y1InGV5E_GAAEl]
+10.2.2025, 5:46:31 - INFO - 🟢 Setting userID = 6786940e83761666aae2d428 for socket [id: AaEMl1y1InGV5E_GAAEl]
+10.2.2025, 5:46:31 - INFO - ✅ Successfully set userID = 6786940e83761666aae2d428 for socket [id: AaEMl1y1InGV5E_GAAEl]
+10.2.2025, 5:46:31 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:46:31 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:46:33 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:46:33 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:46:36 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:46:36 - INFO - Req was made | /username/:username | 6786940e83761666aae2d428
+10.2.2025, 5:46:36 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 5:46:37 - INFO - Req was made | / | 6786940e83761666aae2d428
+10.2.2025, 6:04:27 - INFO - 🔴 Socket disconnected [id: UsfUuz-NuW__Om8rAAEb], Reason: transport close
+10.2.2025, 6:04:27 - INFO - 🗑 Removing socket mapping for user 67a1524f78fa981b52d63aa0
+10.2.2025, 6:04:27 - INFO - 🔵 New connected socket [id: V7xQe300LmzGvPNmAAEn]
+10.2.2025, 6:04:27 - INFO - 🟢 Setting userID = 67a1524f78fa981b52d63aa0 for socket [id: V7xQe300LmzGvPNmAAEn]
+10.2.2025, 6:04:27 - INFO - ✅ Successfully set userID = 67a1524f78fa981b52d63aa0 for socket [id: V7xQe300LmzGvPNmAAEn]
+10.2.2025, 6:04:27 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+10.2.2025, 6:04:27 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+10.2.2025, 6:04:27 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+10.2.2025, 6:09:48 - INFO - 🔴 Socket disconnected [id: V7xQe300LmzGvPNmAAEn], Reason: transport close
+10.2.2025, 6:09:48 - INFO - 🗑 Removing socket mapping for user 67a1524f78fa981b52d63aa0
+10.2.2025, 6:09:48 - INFO - 🔵 New connected socket [id: xPenXzJ-hJU0lI3uAAEp]
+10.2.2025, 6:09:48 - INFO - 🟢 Setting userID = 67a1524f78fa981b52d63aa0 for socket [id: xPenXzJ-hJU0lI3uAAEp]
+10.2.2025, 6:09:48 - INFO - ✅ Successfully set userID = 67a1524f78fa981b52d63aa0 for socket [id: xPenXzJ-hJU0lI3uAAEp]
+10.2.2025, 6:09:48 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+10.2.2025, 6:09:48 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
+10.2.2025, 6:09:48 - INFO - Req was made | / | 67a1524f78fa981b52d63aa0
