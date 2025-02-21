@@ -3,6 +3,7 @@ import { logger } from "../../services/logger.service.js"
 import { utilService } from "../../services/util.service.js"
 
 import { ObjectId } from "mongodb"
+import { userHandler } from "../user/user.handler.js"
 
 export const notificationHandler = {
     query,
@@ -16,10 +17,15 @@ async function query(loggedInUserID) {
         const collection = await dbService.getCollection('notifications')
         const notifications = await collection.aggregate([
             {
-                $match: { userID: utilService.getUserId(loggedInUserID) } // Step 1: Filter notifications for the logged-in user
+                $match: {
+                    $or: [
+                        { "user._id": utilService.getUserId(loggedInUserID) },
+                        { userID: utilService.getUserId(loggedInUserID) }
+                    ]
+                }
             },
             {
-                $unwind: "$activities" // Step 2: Unwind activities so each is its own document
+                $unwind: { path: "$activities", preserveNullAndEmptyArrays: true }
             },
             {
                 $sort: { "activities.createdAt": -1 } // Step 3: Sort by createdAt (newest first)
@@ -60,10 +66,15 @@ async function getByID(userID) {
     }
 }
 
-async function createNotification(loggedInUserID) {
+async function createNotification(userID) {
     try {
+        const user = await userHandler.getById(userID)
+
         const newNotification = {
-            userID: utilService.getUserId(loggedInUserID),
+            user: {
+                _id: user._id,
+                username: user.username
+            },
             activities: []
         }
 

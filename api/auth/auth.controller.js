@@ -8,7 +8,7 @@ export async function login(req, res) {
     try {
         const user = await authHandler.login(username, password)
         const loginToken = authHandler.createToken(user)
-        
+
         logger.info('User login: ', user)
         res.cookie('loginToken', loginToken)
 
@@ -22,20 +22,20 @@ export async function login(req, res) {
 export async function signup(req, res) {
     try {
         const { username, password, fullname } = req.body
-        
-        // IMPORTANT!!! 
-        // Never write passwords to log file!!!
-        // logger.debug(fullname + ', ' + username + ', ' + password)
-        
+
+        const bannedUsernames = ['explore', 'about', 'p', 'direct', 'story', 'home', 'main']
+
+        if (bannedUsernames.some(name => name === username)) throw new Error('Username Taken')
+
         const account = await authHandler.signup(username, password, fullname)
         logger.debug(`auth.route - new account created: ` + JSON.stringify(account))
-        
+
         const user = await authHandler.login(username, password)
         const loginToken = authHandler.createToken(user)
         logger.info('User signup:', user)
 
         await notificationHandler.createNotification(user._id)
-        
+
         res.cookie('loginToken', loginToken)
         res.json(user)
     } catch (err) {
@@ -44,7 +44,7 @@ export async function signup(req, res) {
     }
 }
 
-export async function logout(req, res){
+export async function logout(req, res) {
     try {
         res.clearCookie('loginToken')
         logger.info('User logged out successfully')

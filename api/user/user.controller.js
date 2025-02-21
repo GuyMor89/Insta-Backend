@@ -31,6 +31,17 @@ export async function getUser(req, res) {
     }
 }
 
+export async function getFollowers(req, res) {
+    try {
+        const username = req.params.username
+        const followers = await userHandler.getByUsernameWithFollowers(username)
+        res.send(...followers)
+    } catch (err) {
+        logger.error('Failed to get user followers', err)
+        res.status(400).send({ err: 'Failed to get user followers' })
+    }
+}
+
 export async function deleteUser(req, res) {
     try {
         const userID = req.params.id

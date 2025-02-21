@@ -14,12 +14,12 @@ export const postHandler = {
 
 async function query(limit, loggedInUser) {
     try {
-        const fullLoggedInUser = await userHandler.getById(loggedInUser._id);
+        const fullLoggedInUser = await userHandler.getById(loggedInUser._id)
         // Determine if a limit was provided
-        const hasLimit = limit !== null && limit !== undefined;
+        const hasLimit = limit !== null && limit !== undefined
 
-        const collection = await dbService.getCollection('posts');
-        const pipeline = [];
+        const collection = await dbService.getCollection('posts')
+        const pipeline = []
 
         // If a limit is provided, filter posts based on the user's following list.
         if (hasLimit) {
@@ -27,7 +27,7 @@ async function query(limit, loggedInUser) {
                 $match: {
                     "by._id": { $in: fullLoggedInUser.following }
                 }
-            });
+            })
         }
 
         // Always add a createdAt field (if you still need this for display or other processing)
@@ -37,42 +37,40 @@ async function query(limit, loggedInUser) {
                     $toLong: { $toDate: "$_id" }
                 }
             }
-        });
+        })
 
         // If a limit is provided, sort by creation time. Otherwise, randomize the order.
         if (hasLimit) {
             pipeline.push({
                 $sort: { createdAt: -1 }
-            });
+            })
         } else {
             // Add a random field
             pipeline.push({
                 $addFields: { random: { $rand: {} } }
-            });
+            })
             // Sort documents by the random field
             pipeline.push({
                 $sort: { random: 1 }
-            });
+            })
             // Optionally remove the random field from the output
             pipeline.push({
                 $project: { random: 0 }
-            });
+            })
         }
 
         // Apply the limit stage if one is provided
         if (hasLimit) {
-            pipeline.push({ $limit: Number(limit) });
+            pipeline.push({ $limit: Number(limit) })
         }
 
-        const posts = await collection.aggregate(pipeline).toArray();
-        return posts;
+        const posts = await collection.aggregate(pipeline).toArray()
+        return posts
     } catch (err) {
-        console.error("Error in query function:", err);
-        throw err;
+        console.error("Error in query function:", err)
+        throw err
     }
 }
-
-
 
 async function getByID(postID) {
     try {
@@ -114,7 +112,6 @@ async function updatePost(postData) {
         throw err
     }
 }
-
 
 function _getEmptyCredentials() {
     return {

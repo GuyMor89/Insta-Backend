@@ -52,3 +52,15 @@ export async function markRead(req, res) {
         res.status(500).send({ err: 'Failed to mark all as read' })
     }
 }
+
+export async function sendEmail(req, res) {
+    try {
+        const email = req.body
+        const sentEmail = await messageHandler.sendEmail(email)
+
+        res.json(sentEmail)
+    } catch (err) {
+        logger.error('Failed to send Email', err)
+        res.status(500).send({ err: 'Failed to send Email' })
+    }
+}

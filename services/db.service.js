@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb'
 import { logger } from './logger.service.js'
 import { config } from '../config/index.js'
 
-export const dbService = {getCollection}
+export const dbService = { getCollection }
 
 var dbConn = null
 

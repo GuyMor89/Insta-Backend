@@ -8,6 +8,7 @@ export const userHandler = {
 	query,
 	getById,
 	getByUsername,
+	getByUsernameWithFollowers,
 	getByUsernameWithPosts,
 	remove,
 	update,
@@ -18,7 +19,9 @@ export const userHandler = {
 async function query(text) {
 	try {
 		const collection = await dbService.getCollection('users')
-		return await collection.find(text ? { username: { $regex: text, $options: 'i' } } : {}).toArray()
+		return await collection
+			.find(text ? { username: { $regex: text, $options: 'i' } } : {}, { projection: { password: 0 } })
+			.toArray()
 
 	} catch (err) {
 		logger.error('cannot find users', err)
@@ -29,7 +32,7 @@ async function query(text) {
 async function getById(userID) {
 	try {
 		const collection = await dbService.getCollection('users')
-		const user = await collection.findOne({ _id: ObjectId.createFromHexString(userID) })
+		const user = await collection.findOne({ _id: utilService.getUserId(userID) })
 		delete user.password
 		return user
 	} catch (err) {
@@ -49,13 +52,69 @@ async function getByUsername(username) {
 	}
 }
 
+async function getByUsernameWithFollowers(username) {
+	try {
+		const collection = await dbService.getCollection('users')
+
+		const pipeline = [
+			{
+				$match: { username } // Adjust this as needed
+			},
+			{
+				$addFields: {
+					followersObjIds: {
+						$map: {
+							input: "$followers",
+							as: "followerId",
+							in: { $toObjectId: "$$followerId" } // Convert string IDs to ObjectId
+						}
+					}
+				}
+			},
+			{
+				$lookup: {
+					from: "users", // Replace with the actual collection name
+					localField: "followersObjIds",
+					foreignField: "_id",
+					as: "followersData"
+				}
+			},
+			{
+				$project: {
+					username: 1,
+					followers: {
+						$map: {
+							input: "$followersData",
+							as: "follower",
+							in: {
+								_id: "$$follower._id",
+								username: "$$follower.username",
+								fullname: "$$follower.fullname",
+								imgUrl: "$$follower.imgUrl"
+							}
+						}
+					}
+				}
+			}
+		]
+
+		const userFollowers = await collection.aggregate(pipeline).toArray()
+
+		return userFollowers
+
+	} catch (err) {
+		logger.error(`while finding user ${username} with followers`, err)
+		throw err
+	}
+}
+
 async function getByUsernameWithPosts(username) {
 	try {
 		const collection = await dbService.getCollection('users')
 		const userWithPosts = await collection.aggregate([
 			{
 				$match: {
-					username // Replace with the actual username
+					username
 				}
 			},
 			{
@@ -110,8 +169,8 @@ async function getByUsernameWithPosts(username) {
 					followers: 1,
 					bio: 1,
 					imgUrl: 1,
-					postIDs: 1,
-					savedPostIDs: 1,
+					// postIDs: 1,
+					// savedPostIDs: 1,
 					// Map the userPosts array to return just { _id, url }
 					imgUrls: {
 						$map: {
@@ -119,7 +178,9 @@ async function getByUsernameWithPosts(username) {
 							as: 'post',
 							in: {
 								_id: '$$post._id',
-								url: '$$post.imgUrl'
+								url: '$$post.imgUrl',
+								comments: '$$post.comments',
+								likedBy: '$$post.likedBy'
 							}
 						}
 					},
@@ -130,7 +191,9 @@ async function getByUsernameWithPosts(username) {
 							as: 'post',
 							in: {
 								_id: '$$post._id',
-								url: '$$post.imgUrl'
+								url: '$$post.imgUrl',
+								comments: '$$post.comments',
+								likedBy: '$$post.likedBy'
 							}
 						}
 					}
@@ -140,10 +203,9 @@ async function getByUsernameWithPosts(username) {
 
 		return userWithPosts
 	} catch (err) {
-		logger.error(`while finding user ${username}`, err)
+		logger.error(`while finding user ${username} with posts`, err)
 		throw err
 	}
-
 }
 
 async function remove(userID) {

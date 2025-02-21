@@ -1,5 +1,6 @@
 import { dbService } from "../../services/db.service.js"
 import { logger } from "../../services/logger.service.js"
+import { sendMail } from "../../services/mail.service.js"
 import { utilService } from '../../services/util.service.js'
 import { userHandler } from '../user/user.handler.js'
 
@@ -9,7 +10,8 @@ export const messageHandler = {
 	query,
 	addMessage,
 	sendLine,
-	markRead
+	markRead,
+	sendEmail
 }
 
 async function query(loggedInUserID) {
@@ -22,6 +24,19 @@ async function query(loggedInUserID) {
 				}
 			},
 			{
+				$addFields: {
+					otherUser: {
+						$first: {
+							$filter: {
+								input: "$by",
+								as: "b",
+								cond: { $ne: ["$$b._id", ObjectId.createFromHexString(loggedInUserID)] }
+							}
+						}
+					}
+				}
+			},
+			{
 				$project: {
 					_id: 1,
 					lines: 1,
@@ -31,32 +46,29 @@ async function query(loggedInUserID) {
 								$filter: {
 									input: "$lines",
 									as: "line",
-									cond: { $eq: ["$$line.isRead", false] }
+									cond: {
+										$and: [
+											{ $eq: ["$$line.isRead", false] },
+											{ $eq: ["$$line.by", "$otherUser.username"] } // Check if the unread message is from the other user
+										]
+									}
 								}
 							}
 						}, 0]
 					},
-					user: {
-						$first: {
-							$filter: {
-								input: "$by",
-								as: "b",
-								cond: { $ne: ["$$b._id", ObjectId.createFromHexString(loggedInUserID)] }
-							}
-						}
-					},
+					user: "$otherUser",
 					lastSentAt: {
-						$toLong: { $last: "$lines.sentAt" } // Extract and convert last sentAt to a number
+						$toLong: { $last: "$lines.sentAt" }
 					}
 				}
 			},
 			{
-				$sort: { lastSentAt: -1 } // Sort by latest message timestamp in descending order
+				$sort: { lastSentAt: -1 }
 			}
-		]).toArray()
-
+		]).toArray();
+		
 		return messages
-
+		
 	} catch (err) {
 		logger.error('cannot find messages', err)
 		throw err
@@ -68,7 +80,7 @@ async function getByID(messageID) {
 	try {
 		const collection = await dbService.getCollection('messages')
 		const message = await collection.findOne({ _id: ObjectId.createFromHexString(messageID) })
-
+		
 		return message
 	} catch (err) {
 		logger.error('ERROR: cannot find message')
@@ -76,8 +88,35 @@ async function getByID(messageID) {
 	}
 }
 
+async function checkForExistingMessage(loggedInUserID, secondUserID) {
+	
+	const collection = await dbService.getCollection('messages')
+	const existingMessage = await collection.aggregate([
+		{
+			$match: {
+				"by._id": { $all: [utilService.getUserId(loggedInUserID), utilService.getUserId(secondUserID)] } // ✅ Check if both user IDs exist in the "by" array
+			}
+		},
+		{
+			$project: { _id: 1 } // ✅ Only return the message document's _id
+		}
+	]).toArray()
+
+	if (existingMessage.length > 0) {
+		console.log("Existing message _id:", existingMessage[0]._id)
+		return existingMessage[0]._id
+	} else {
+		console.log("No conversation found.")
+		return null
+	}
+}
+
 async function addMessage(loggedInUserID, secondUserID) {
 	try {
+
+		const existingMessageID = checkForExistingMessage(loggedInUserID, secondUserID)
+		if (existingMessageID !== null) return existingMessageID
+
 		const fullLoggedInUser = await userHandler.getById(loggedInUserID)
 		const fullSecondUser = await userHandler.getById(secondUserID)
 		const newMessage = {
@@ -128,6 +167,21 @@ async function markRead(messageID) {
 		return message
 	} catch (err) {
 		logger.error('cannot mark as read', err)
+		throw err
+	}
+}
+
+async function sendEmail(email) {
+	try {
+		const mailDetails = {
+			subject: `${email.subject} from ${email.from} (${email.email})`,
+			text: email.text,
+		}
+		console.log(mailDetails)
+		sendMail(mailDetails)
+		return email
+	} catch (err) {
+		logger.error('cannot send Email', err)
 		throw err
 	}
 }

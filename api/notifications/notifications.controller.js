@@ -16,8 +16,7 @@ export async function getNotifications(req, res) {
 export async function createNotification(req, res) {
     try {
         const loggedInUser = req.loggedInUser
-        console.log(loggedInUser)
-        const notification = await notificationHandler.createNotification(loggedInUser._id)
+        const notification = await notificationHandler.createNotification(loggedInUser)
         res.json(notification)
     } catch (err) {
         logger.error('Failed to create notification', err)
